@@ -1,40 +1,39 @@
 var wallets = []
-	document.addEventListener('DOMContentLoaded', function () {
-		var updateButton = document.getElementById('update');
-		updateButton.addEventListener('click', doUpdate, false);
+document.addEventListener('DOMContentLoaded', function () {
+	var updateButton = document.getElementById('update');
+	updateButton.addEventListener('click', doUpdate, false);
 
-		var settingsButton = document.getElementById('settings');
-		settingsButton.addEventListener('click', function () {
-			chrome.runtime.openOptionsPage();
-		}, false);
-
-		chrome.storage.sync.get({
-			walletId: "",
-			wallets: [{
-					label: "",
-					walletId: ""
-				}
-			]
-		}, function (items) {
-			if (items.walletId != '') {
-				wallets.push({
-					label: "wallet",
-					walletId: items.walletId
-				});
-			} else {
-				for (var i = 0; i < items.wallets.length; i++) {
-					wallets.push({
-						label: items.wallets[i].label,
-						walletId: items.wallets[i].walletId
-					});
-				}
-			}
-			doUpdate();
-		});
+	var settingsButton = document.getElementById('settings');
+	settingsButton.addEventListener('click', function () {
+		chrome.runtime.openOptionsPage();
 	}, false);
-	
-function addLoadableWalletToTable(tableElem, label, showloader)
-{
+
+	chrome.storage.sync.get({
+		walletId: "",
+		wallets: [{
+				label: "",
+				walletId: ""
+			}
+		]
+	}, function (items) {
+		if (items.walletId != '') {
+			wallets.push({
+				label: "wallet",
+				walletId: items.walletId
+			});
+		} else {
+			for (var i = 0; i < items.wallets.length; i++) {
+				wallets.push({
+					label: items.wallets[i].label,
+					walletId: items.wallets[i].walletId
+				});
+			}
+		}
+		doUpdate();
+	});
+}, false);
+
+function addLoadableWalletToTable(tableElem, label, showloader) {
 	// Create an empty <tr> element and add it to the 1st position of the table:
 	var row = tableElem.insertRow(0);
 
@@ -45,8 +44,38 @@ function addLoadableWalletToTable(tableElem, label, showloader)
 	// Add some text to the new cells:
 	labelCell.innerHTML = label;
 	if (showloader)
-		balanceCell.innerHTML = "<img src='\icon.png' class='image'>";//balance + "&#9404;";
+		balanceCell.innerHTML = "<img src='\icon.png' class='image'>"; //balance + "&#9404;";
 	return balanceCell;
+}
+
+function populateRow(tableRef, wallet) {
+	var request = new XMLHttpRequest();
+	request.open('GET', 'http://explorer.grlc-bakery.fun/ext/getbalance/' + wallet.walletId, true);
+
+	var balElem = addLoadableWalletToTable(tableRef, wallet.label, true);
+	request.onload = function () {
+		var resp = request.responseText;
+		if (request.status >= 200 && request.status < 400) {
+			try {
+				var json = JSON.parse(request.responseText);
+				if ("error" in json) {
+					balElem.innerHTML = json["error"];
+				} else {
+					balElem.innerHTML = resp;
+				}
+			} catch (exception) {
+				balElem.innerHTML = resp + "&#9404;";
+			}
+		} else {
+			balElem.innerHTML = "ERR";
+		}
+	};
+
+	request.onerror = function () {
+		balElem.innerHTML = "ERR";
+	};
+
+	request.send();
 }
 
 function doUpdate() {
@@ -56,37 +85,9 @@ function doUpdate() {
 	if (wallets.length == 1 && wallets[0] == '') {
 		addLoadableWalletToTable(balanceTable, "No wallet set", false);
 	} else {
-		for (var i = 0; i < wallets.length; i++) {
+		for (var i = wallets.length - 1; i >= 0 ; i--) {
 			var wallet = wallets[i];
-			
-			var request = new XMLHttpRequest();
-			request.open('GET', 'http://explorer.grlc-bakery.fun/ext/getbalance/' + wallet.walletId, true);
-			
-			var balElem = addLoadableWalletToTable(balanceTable, wallet.label, true);
-
-			request.onload = function () {
-				var resp = request.responseText;
-				if (request.status >= 200 && request.status < 400) {
-					try {
-						var json = JSON.parse(request.responseText);
-						if ("error" in json) {
-							balElem.innerHTML = json["error"];
-						} else {
-							balElem.innerHTML = resp;
-						}
-					} catch (exception) {
-						balElem.innerHTML = resp + "&#9404;";
-					}
-				} else {
-					balElem.innerHTML = "ERR";
-				}
-			};
-
-			request.onerror = function () {
-				balElem.innerHTML = "ERR";
-			};
-
-			request.send();
+			populateRow(balanceTable, wallet);
 		}
 	}
 }

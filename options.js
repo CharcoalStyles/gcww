@@ -31,9 +31,9 @@ function save_options() {
 
 	var children = document.getElementById('walletsList').children;
 	
-	for (var i = 0; i < Math.floor(children.length / 2); i++) {
-		var label = children[i * 2];
-		var wallet = children[i * 2 + 1];
+	for (var i = 0; i < children.length; i += 3) {
+		var label = children[i];
+		var wallet = children[i + 1];
 		wallets.push({
 			label: label.value,
 			walletId: wallet.value
@@ -80,3 +80,8 @@ document.getElementById('addWallet').addEventListener('click',
 	function () {
 	addInput("", "");
 });
+
+
+document.getElementById('yyy').addEventListener('click',
+	restore_options
+);
