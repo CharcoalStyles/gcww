@@ -3,7 +3,7 @@
 
 	"name": "Garlicoin Wallet Watch",
 	"description": "This extension will show you your current Garlicoin wallet value",
-	"version": "0.31",
+	"version": "0.4",
 	"icons": {
 		"128": "128.png"
 	},
