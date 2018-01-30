@@ -17,6 +17,7 @@
 	},
 	"permissions": [
         "storage",
-		"http://explorer.grlc-bakery.fun/"
+		"https://garli.co.in/",
+		"https://api.coinmarketcap.com/"
 	]
 }

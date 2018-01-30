@@ -24,3 +24,9 @@ table {
 #wallet {
 	font-size: 14pt;
 }
+
+.minip {
+	font-size: 12pt;
+	font-weight: normal;
+	margin: 5px 0;
+}
