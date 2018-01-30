@@ -50,7 +50,7 @@ function addLoadableWalletToTable(tableElem, label, showloader) {
 
 function populateRow(tableRef, wallet) {
 	var request = new XMLHttpRequest();
-	request.open('GET', 'http://explorer.grlc-bakery.fun/ext/getbalance/' + wallet.walletId, true);
+	request.open('GET', 'http://garli.co.in/ext/getbalance/' + wallet.walletId, true);
 
 	var balElem = addLoadableWalletToTable(tableRef, wallet.label, true);
 	request.onload = function () {
