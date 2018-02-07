@@ -75,7 +75,7 @@ function populateRow(tableRef, wallet) {
 					
 				if (wallet.showMbtc && conv.mBtc > 0)
 				{
-					balElem.innerHTML += "<p class='minip'>" + (bal * conv.mBtc) + "mBtc</p>";
+					balElem.innerHTML += "<p class='minip'>" + (bal * conv.mBtc * 1000) + "mBtc</p>";
 				}
 				
 				if (wallet.showUsd && conv.usd > 0)
